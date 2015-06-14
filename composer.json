@@ -1,0 +1,43 @@
+{
+    "name": "rollerworks/datagrid-twig",
+    "description": " Twig render engine for RollerworksDatagrid",
+    "keywords": ["rollerworks", "datagrid", "twig"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastiaan Stok",
+            "email": "s.stok@rollercapes.net"
+        },
+        {
+            "name": "Community contributions",
+            "homepage": "https://github.com/Rollerworks/rollerworks-datagrid/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "rollerworks/datagrid": "~0.3",
+        "twig/twig": "~1.18",
+        "symfony/twig-bridge": "~2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rollerworks\\Component\\Datagrid\\Twig\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rollerworks\\Component\\Datagrid\\Tests\\Twig\\": "tests/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

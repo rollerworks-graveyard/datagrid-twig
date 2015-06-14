@@ -1,0 +1,80 @@
+{#
+    Base blocks
+#}
+
+{% block datagrid %}
+{% spaceless %}
+    <table>
+        <thead>
+            {{ rollerworks_datagrid_header_widget(datagrid) }}
+        </thead>
+        <tbody>
+            {{ rollerworks_datagrid_rowset_widget(datagrid) }}
+        </tbody>
+    </table>
+{% endspaceless %}
+{% endblock %}
+
+{% block datagrid_column_header %}
+{% spaceless %}
+    <th><span>{{ header.label }}</span></th>
+{% endspaceless %}
+{% endblock %}
+
+{% block datagrid_header %}
+{% spaceless %}
+<tr>
+    {% for header in headers %}
+        {{ rollerworks_datagrid_column_header_widget(header) }}
+    {% endfor %}
+</tr>
+{% endspaceless %}
+{% endblock %}
+
+{% block datagrid_column_cell %}
+{% spaceless %}
+<td>
+    <div>
+        {% endspaceless %}{% if cell.useRaw %}{{ cell.value|raw }}{% else %}{{ cell.value }}{% endif %}{% spaceless %}
+    </div>
+</td>
+{% endspaceless %}
+{% endblock %}
+
+{% block datagrid_rowset %}
+{% spaceless %}
+    {% for index, row in datagrid %}
+        <tr>
+            {% for cell in row %}
+                {{ rollerworks_datagrid_column_cell_widget(cell) }}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+{% endspaceless %}
+{% endblock %}
+
+{#
+    Core extension blocks
+#}
+
+{% block datagrid_column_type_action_cell_action %}
+<a {{ rollerworks_datagrid_attributes_widget(attr) }}>{{ content|raw }}</a>
+{% endblock %}
+
+{% block datagrid_column_type_action_cell %}
+{% spaceless %}
+    <td>
+        <div>
+            {% for action_name, action in cell.value %}
+                {{ rollerworks_datagrid_column_type_action_cell_action_widget(
+                    cell,
+                    action_name,
+                    action.label,
+                    action.attr|merge({'href' : action.url}),
+                    action.field_mapping_values
+                ) }}
+            {% endfor %}
+        </div>
+    </td>
+{% endspaceless %}
+{% endblock %}
