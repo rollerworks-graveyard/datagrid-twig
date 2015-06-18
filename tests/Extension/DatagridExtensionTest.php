@@ -47,7 +47,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         $twig->addGlobal('global_var', 'global_value');
 
         $this->twig = $twig;
-        $this->extension = new DatagridExtension('default.html.twig');
+        $this->extension = new DatagridExtension('datagrid.html.twig');
 
         $this->twig->addExtension($this->extension);
         $this->twig->initRuntime();
