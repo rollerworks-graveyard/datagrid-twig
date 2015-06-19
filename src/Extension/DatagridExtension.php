@@ -97,6 +97,7 @@ class DatagridExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
+            new \Twig_SimpleFunction('rollerworks_datagrid', [$this, 'datagrid'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('rollerworks_datagrid_widget', [$this, 'datagrid'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('rollerworks_datagrid_header_widget', [$this, 'datagridHeader'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('rollerworks_datagrid_rowset_widget', [$this, 'datagridRowset'], ['is_safe' => ['html']]),
