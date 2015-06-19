@@ -11,7 +11,7 @@
         },
         {
             "name": "Community contributions",
-            "homepage": "https://github.com/Rollerworks/rollerworks-datagrid/contributors"
+            "homepage": "https://github.com/Rollerworks/rollerworks-datagrid-twig/contributors"
         }
     ],
     "require": {
