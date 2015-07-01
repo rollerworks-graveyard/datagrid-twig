@@ -153,22 +153,28 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         $this->assertHtmlEquals('datagrid_cell_widget_result.html', $html);
     }
 
-    public function testRenderCellActionWidget()
+    public function testRenderCompoundCellWidget()
     {
         $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['title' => '[title]']]));
         $datagrid->addColumn(
             $this->factory->createColumn(
                 'actions',
-                'action',
+                'compound_column',
                 $datagrid,
                 [
                     'label' => 'Actions',
-                    'field_mapping' => ['[id]'],
-                    'actions' => [
-                        'modify' => [
-                            'uri_scheme' => 'entity/%d/modify',
-                        ],
+                    'columns' => [
+                        'modify' => $this->factory->createColumn(
+                            'action_modify',
+                            'action',
+                            $datagrid,
+                            [
+                                'label' => 'Modify',
+                                'field_mapping' => ['id' => '[id]'],
+                                'uri_scheme' => 'entity/{id}/modify',
+                            ]
+                        )
                     ],
                 ]
             )
@@ -185,15 +191,31 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         $datagridWithTheme->addColumn(
             $this->factory->createColumn(
                 'actions',
-                'action',
+                'compound_column',
                 $datagrid,
                 [
                     'label' => 'Actions',
-                    'field_mapping' => ['[id]'],
-                    'actions' => [
-                        'modify' => [
-                            'uri_scheme' => 'entity/%d/modify',
-                        ],
+                    'columns' => [
+                        'modify' => $this->factory->createColumn(
+                            'action_modify',
+                            'action',
+                            $datagridWithTheme,
+                            [
+                                'content' => 'Modify',
+                                'field_mapping' => ['id' => '[id]'],
+                                'uri_scheme' => 'entity/{id}/',
+                            ]
+                        ),
+                        'view' => $this->factory->createColumn(
+                            'action_view',
+                            'action',
+                            $datagridWithTheme,
+                            [
+                                'content' => 'View',
+                                'field_mapping' => ['id' => '[id]'],
+                                'uri_scheme' => 'entity/{id}/',
+                            ]
+                        )
                     ],
                 ]
             )
@@ -212,7 +234,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         $cellWithThemeView = $datagridWithThemeView[0]['actions'];
 
         $html = $this->twig->render(
-            'datagrid/action_cell_action_widget_test.html.twig',
+            'datagrid/cell_widget_test.html.twig',
             [
                 'grid_with_header_theme' => $datagridWithThemeView,
                 'cell' => $cellView,
@@ -220,7 +242,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
             ]
         );
 
-        $this->assertHtmlEquals('action_cell_action_widget_result.html', $html);
+        $this->assertHtmlEquals('compound_column_cell_widget_result.html', $html);
     }
 
     public function testDatagridRenderBlock()
@@ -423,61 +445,13 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
                 'row_index' => 0,
                 'datagrid_name' => 'grid',
                 'translation_domain' => null,
-                'vars' => [],
+                'vars' => ['row' => 0],
                 'global_var' => 'global_value',
             ]
         )->willReturn(true);
 
         $this->extension->setBaseTheme($template->reveal());
         $this->extension->datagridColumnCell($cellView);
-    }
-
-    public function testDatagridColumnActionCellActionRenderBlock()
-    {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn(
-            $this->factory->createColumn(
-                'action',
-                'action',
-                $datagrid,
-                [
-                    'label' => 'Title',
-                    'field_mapping' => ['[id]'],
-                    'actions' => [
-                        'delete' => [
-                            'label' => 'Delete',
-                            'uri_scheme' => 'entity/%d/delete',
-                        ],
-                    ],
-                ]
-            )
-        );
-
-        $datagrid->setData([['title' => 'This is value 1', 'id' => 1]]);
-
-        $view = $datagrid->createView();
-        $cellView = $view[0]['action'];
-
-        $template = $this->prophesize('\Twig_Template');
-        $template->getParent([])->willReturn(false);
-        $template->hasBlock('datagrid_grid_column_type_action_cell_action_delete')->willReturn(false)->shouldBeCalled();
-        $template->hasBlock('datagrid_column_type_action_cell_action_delete')->willReturn(false)->shouldBeCalled();
-        $template->hasBlock('datagrid_grid_column_type_action_cell_action')->willReturn(false)->shouldBeCalled();
-        $template->hasBlock('datagrid_column_type_action_cell_action')->willReturn(true)->shouldBeCalled();
-        $template->displayBlock(
-            'datagrid_column_type_action_cell_action',
-            [
-                'content' => 'Delete',
-                'attr' => [],
-                'datagrid_name' => 'grid',
-                'translation_domain' => null,
-                'field_mapping_values' => ['id' => 1],
-                'global_var' => 'global_value',
-            ]
-        )->willReturn(true);
-
-        $this->extension->setBaseTheme($template->reveal());
-        $this->extension->datagridColumnActionCellActionWidget($cellView, 'delete', 'Delete', [], ['id' => 1]);
     }
 
     private function assertHtmlEquals($expected, $outputHtml)
