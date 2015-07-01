@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "rollerworks/datagrid": "~0.4",
+        "rollerworks/datagrid": "~0.7",
         "twig/twig": "~1.18",
         "symfony/twig-bridge": "~2.3"
     },

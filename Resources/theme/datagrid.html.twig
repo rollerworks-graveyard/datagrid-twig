@@ -41,6 +41,16 @@
 {% endspaceless %}
 {% endblock %}
 
+{% block datagrid_column_type_compound_column_cell %}
+{% spaceless %}
+<td>
+    {% for subCell in cell.value %}
+        {{ rollerworks_datagrid_column_cell_widget(subCell, subCell.attributes) }}
+    {% endfor %}
+</td>
+{% endspaceless %}
+{% endblock %}
+
 {% block datagrid_rowset %}
 {% spaceless %}
     {% for index, row in datagrid %}
@@ -57,24 +67,6 @@
     Core extension blocks
 #}
 
-{% block datagrid_column_type_action_cell_action %}
-<a {{ rollerworks_datagrid_attributes_widget(attr) }}>{{ content|raw }}</a>
-{% endblock %}
-
 {% block datagrid_column_type_action_cell %}
-{% spaceless %}
-    <td>
-        <div>
-            {% for action_name, action in cell.value %}
-                {{ rollerworks_datagrid_column_type_action_cell_action_widget(
-                    cell,
-                    action_name,
-                    action.label,
-                    action.attr|merge({'href' : action.url}),
-                    action.value
-                ) }}
-            {% endfor %}
-        </div>
-    </td>
-{% endspaceless %}
+<a {{ rollerworks_datagrid_attributes_widget(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
 {% endblock %}

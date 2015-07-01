@@ -288,50 +288,21 @@ class DatagridExtension extends \Twig_Extension
             'datagrid_column_cell',
         ];
 
-        $context = [
-            'cell' => $view,
-            'row_index' => $view->attributes['row'],
-            'datagrid_name' => $datagridName,
-            'translation_domain' => isset($view->attributes['translation_domain']) ? $view->attributes['translation_domain'] : null,
-            'vars' => array_merge(
-                $this->getVars($datagridView),
-                $vars
-            ),
-        ];
+        $context = array_merge(
+            [
+                'cell' => $view,
+                'row_index' => $view->attributes['row'],
+                'datagrid_name' => $datagridName,
+                'translation_domain' => isset($view->attributes['translation_domain']) ? $view->attributes['translation_domain'] : null,
+                'vars' => array_merge(
+                    $view->attributes,
+                    $vars
+                ),
+            ],
+            $this->getVars($datagridView)
+        );
 
         return $this->renderTheme($datagridView, $context, $blockNames, $datagridName.'_column_name_'.$view->name.'_cell');
-    }
-
-    /**
-     * @param CellView $view
-     * @param          $action
-     * @param          $content
-     * @param array    $urlAttrs
-     * @param array    $fieldMappingValues
-     *
-     * @return string
-     */
-    public function datagridColumnActionCellActionWidget(CellView $view, $action, $content, array $urlAttrs = [], array $fieldMappingValues = [])
-    {
-        $datagridView = $view->datagrid;
-        $datagridName = $datagridView->getName();
-
-        $blockNames = [
-            'datagrid_'.$datagridName.'_column_type_action_cell_action_'.$action,
-            'datagrid_column_type_action_cell_action_'.$action,
-            'datagrid_'.$datagridName.'_column_type_action_cell_action',
-            'datagrid_column_type_action_cell_action',
-        ];
-
-        $context = [
-            'content' => $content,
-            'attr' => $urlAttrs,
-            'datagrid_name' => $datagridName,
-            'translation_domain' => isset($view->attributes['translation_domain']) ? $view->attributes['translation_domain'] : null,
-            'field_mapping_values' => $fieldMappingValues,
-        ];
-
-        return $this->renderTheme($datagridView, $context, $blockNames, $datagridName.'_column_name_'.$view->name.'_action_'.$action);
     }
 
     /**
