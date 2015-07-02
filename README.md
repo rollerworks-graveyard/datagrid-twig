@@ -36,6 +36,6 @@ License
 The source of this package is subject to the MIT license that is bundled
 with this source code in the file [LICENSE](LICENSE).
 
-[1]: https://github.com/rollerworks/rollerworks-datagrid-twig
-[2]: https://github.com/rollerworks/rollerworks-datagrid-twig#contributing
+[1]: https://github.com/rollerworks/rollerworks-datagrid
+[2]: https://github.com/rollerworks/rollerworks-datagrid#contributing
 [3]: http://rollerworks-datagrid-twig.readthedocs.org/en/latest/
