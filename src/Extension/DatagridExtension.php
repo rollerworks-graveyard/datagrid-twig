@@ -103,7 +103,6 @@ class DatagridExtension extends \Twig_Extension
             new \Twig_SimpleFunction('rollerworks_datagrid_rowset_widget', [$this, 'datagridRowset'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('rollerworks_datagrid_column_header_widget', [$this, 'datagridColumnHeader'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('rollerworks_datagrid_column_cell_widget', [$this, 'datagridColumnCell'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('rollerworks_datagrid_column_type_action_cell_action_widget', [$this, 'datagridColumnActionCellActionWidget'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('rollerworks_datagrid_attributes_widget', [$this, 'datagridAttributes'], ['is_safe' => ['html']]),
         ];
     }
