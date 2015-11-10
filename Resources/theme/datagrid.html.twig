@@ -68,5 +68,5 @@
 #}
 
 {% block datagrid_column_type_action_cell %}
-<a {{ rollerworks_datagrid_attributes_widget(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
+<a{{ rollerworks_datagrid_attributes_widget(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
 {% endblock %}
