@@ -382,6 +382,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
             'datagrid_column_header',
             [
                 'header' => $headerView,
+                'label' => 'Title',
                 'translation_domain' => null,
                 'vars' => [],
                 'global_var' => 'global_value',

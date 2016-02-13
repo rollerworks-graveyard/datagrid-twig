@@ -16,8 +16,11 @@
 {% endblock %}
 
 {% block datagrid_column_header %}
+{% if label is empty %}
+    {% set label = name|humanize %}
+{% endif %}
 {% spaceless %}
-    <th><span>{{ header.label }}</span></th>
+    <th><span>{{ label }}</span></th>
 {% endspaceless %}
 {% endblock %}
 
@@ -68,5 +71,10 @@
 #}
 
 {% block datagrid_column_type_action_cell %}
+{% set content = vars.content %}
+{% if content is empty %}
+    {% set content = cell.name|humanize %}
+{% endif %}
+
 <a{{ rollerworks_datagrid_attributes_widget(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
 {% endblock %}

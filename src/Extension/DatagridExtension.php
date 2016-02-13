@@ -71,7 +71,6 @@ class DatagridExtension extends \Twig_Extension
             $this->baseThemes[$i] = $theme;
         }
     }
-
     /**
      * Set base theme or themes.
      *
@@ -107,6 +106,17 @@ class DatagridExtension extends \Twig_Extension
         ];
     }
 
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFilters()
+    {
+        return [
+            new \Twig_SimpleFilter('humanize', [$this, 'humanize']),
+        ];
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -123,6 +133,18 @@ class DatagridExtension extends \Twig_Extension
         return [
             new DatagridThemeTokenParser(),
         ];
+    }
+
+    /**
+     * Makes a technical name human readable.
+     *
+     * @param string $text The text to humanize.
+     *
+     * @return string The humanized text.
+     */
+    public function humanize($text)
+    {
+        return ucfirst(trim(strtolower(preg_replace(['/([A-Z])/', '/[_\s]+/'], ['_$1', ' '], $text))));
     }
 
     /**
@@ -228,6 +250,7 @@ class DatagridExtension extends \Twig_Extension
         $context = [
             'header' => $view,
             'translation_domain' => isset($view->attributes['translation_domain']) ? $view->attributes['translation_domain'] : null,
+            'label' => $view->label,
             'vars' => array_merge($this->getVars($view->datagrid), $vars),
         ];
 
