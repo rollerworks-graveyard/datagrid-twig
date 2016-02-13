@@ -17,6 +17,6 @@ base: master
 repo_adapter: github
 issue_tracker: github
 repo_org: rollerworks
-repo_name: rollerworks-datagrid-twig
+repo_name: datagrid-twig
 issue_project_org: rollerworks
-issue_project_name: rollerworks-datagrid
+issue_project_name: datagrid
