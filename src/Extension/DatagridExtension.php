@@ -13,7 +13,7 @@ namespace Rollerworks\Component\Datagrid\Twig\Extension;
 
 use Rollerworks\Component\Datagrid\Column\CellView;
 use Rollerworks\Component\Datagrid\Column\HeaderView;
-use Rollerworks\Component\Datagrid\DatagridViewInterface;
+use Rollerworks\Component\Datagrid\DatagridView;
 use Rollerworks\Component\Datagrid\Twig\TokenParser\DatagridThemeTokenParser;
 
 /**
@@ -133,18 +133,18 @@ class DatagridExtension extends \Twig_Extension
      *
      * @internal
      *
-     * @param DataGridViewInterface $datagrid
+     * @param DatagridView $datagrid
      * @param                       $theme
      * @param array                 $vars
      */
-    public function setTheme(DataGridViewInterface $datagrid, $theme, array $vars = [])
+    public function setTheme(DatagridView $datagrid, $theme, array $vars = [])
     {
         if (!$theme instanceof \Twig_Template) {
             $theme = $this->environment->loadTemplate($theme);
         }
 
-        $this->themes[$datagrid->getName()] = $theme;
-        $this->themesVars[$datagrid->getName()] = $vars;
+        $this->themes[$datagrid->name] = $theme;
+        $this->themesVars[$datagrid->name] = $vars;
     }
 
     /**
@@ -152,13 +152,13 @@ class DatagridExtension extends \Twig_Extension
      *
      * @internal
      *
-     * @param DatagridViewInterface $view
+     * @param DatagridView $view
      *
      * @return string
      */
-    public function datagrid(DatagridViewInterface $view)
+    public function datagrid(DatagridView $view)
     {
-        $datagridName = $view->getName();
+        $datagridName = $view->name;
         $blockNames = [
             'datagrid_'.$datagridName,
             'datagrid',
@@ -177,21 +177,21 @@ class DatagridExtension extends \Twig_Extension
      *
      * @internal
      *
-     * @param DatagridViewInterface $view
-     * @param array                 $vars
+     * @param DatagridView $view
+     * @param array        $vars
      *
      * @return string
      */
-    public function datagridHeader(DatagridViewInterface $view, array $vars = [])
+    public function datagridHeader(DatagridView $view, array $vars = [])
     {
-        $datagridName = $view->getName();
+        $datagridName = $view->name;
         $blockNames = [
             'datagrid_'.$datagridName.'_header',
             'datagrid_header',
         ];
 
         $context = [
-            'headers' => $view->getColumns(),
+            'headers' => $view->columns,
             'vars' => array_merge(
                 $this->getVars($view),
                 $vars
@@ -214,13 +214,13 @@ class DatagridExtension extends \Twig_Extension
     public function datagridColumnHeader(HeaderView $view, array $vars = [])
     {
         $datagridView = $view->datagrid;
-        $datagridName = $datagridView->getName();
+        $datagridName = $datagridView->name;
 
         $blockNames = [
             'datagrid_'.$datagridName.'_column_name_'.$view->name.'_header',
-            'datagrid_'.$datagridName.'_column_type_'.$view->type.'_header',
+            'datagrid_'.$datagridName.'_column_type_'.$view->prefix.'_header',
             'datagrid_column_name_'.$view->name.'_header',
-            'datagrid_column_type_'.$view->type.'_header',
+            'datagrid_column_type_'.$view->prefix.'_header',
             'datagrid_'.$datagridName.'_column_header',
             'datagrid_column_header',
         ];
@@ -239,14 +239,14 @@ class DatagridExtension extends \Twig_Extension
      *
      * @internal
      *
-     * @param DatagridViewInterface $view
-     * @param array                 $vars
+     * @param DatagridView $view
+     * @param array        $vars
      *
      * @return string
      */
-    public function datagridRowset(DatagridViewInterface $view, array $vars = [])
+    public function datagridRowset(DatagridView $view, array $vars = [])
     {
-        $datagridName = $view->getName();
+        $datagridName = $view->name;
         $blockNames = [
             'datagrid_'.$datagridName.'_rowset',
             'datagrid_rowset',
@@ -276,13 +276,13 @@ class DatagridExtension extends \Twig_Extension
     public function datagridColumnCell(CellView $view, array $vars = [])
     {
         $datagridView = $view->datagrid;
-        $datagridName = $datagridView->getName();
+        $datagridName = $datagridView->name;
 
         $blockNames = [
             'datagrid_'.$datagridName.'_column_name_'.$view->name.'_cell',
-            'datagrid_'.$datagridName.'_column_type_'.$view->type.'_cell',
+            'datagrid_'.$datagridName.'_column_type_'.$view->prefix.'_cell',
             'datagrid_column_name_'.$view->name.'_cell',
-            'datagrid_column_type_'.$view->type.'_cell',
+            'datagrid_column_type_'.$view->prefix.'_cell',
             'datagrid_'.$datagridName.'_column_cell',
             'datagrid_column_cell',
         ];
@@ -330,16 +330,16 @@ class DatagridExtension extends \Twig_Extension
      *
      * The last template will always be the default one.
      *
-     * @param DatagridViewInterface $datagrid
+     * @param DatagridView $datagrid
      *
      * @return array
      */
-    private function getTemplates(DataGridViewInterface $datagrid)
+    private function getTemplates(DatagridView $datagrid)
     {
         $templates = [];
 
-        if (isset($this->themes[$datagrid->getName()])) {
-            $templates[] = $this->themes[$datagrid->getName()];
+        if (isset($this->themes[$datagrid->name])) {
+            $templates[] = $this->themes[$datagrid->name];
         }
 
         for ($i = count($this->baseThemes) - 1; $i >= 0; --$i) {
@@ -352,14 +352,14 @@ class DatagridExtension extends \Twig_Extension
     /**
      * Returns the variables that were assigned to the DatagridView.
      *
-     * @param DatagridViewInterface $datagrid
+     * @param DatagridView $datagrid
      *
      * @return array
      */
-    private function getVars(DataGridViewInterface $datagrid)
+    private function getVars(DatagridView $datagrid)
     {
-        if (isset($this->themesVars[$datagrid->getName()])) {
-            return $this->themesVars[$datagrid->getName()];
+        if (isset($this->themesVars[$datagrid->name])) {
+            return $this->themesVars[$datagrid->name];
         }
 
         return [];
@@ -370,10 +370,10 @@ class DatagridExtension extends \Twig_Extension
      *
      * The resolved template and block are cached for future reference.
      *
-     * @param DatagridViewInterface $datagridView
-     * @param array                 $contextVars
-     * @param array                 $availableBlocks
-     * @param string|null           $cacheKey
+     * @param DatagridView $datagridView
+     * @param array        $contextVars
+     * @param array        $availableBlocks
+     * @param string|null  $cacheKey
      *
      * @throws \Exception
      * @throws \Twig_Error
@@ -382,7 +382,7 @@ class DatagridExtension extends \Twig_Extension
      * @return string
      */
     private function renderTheme(
-        DataGridViewInterface $datagridView,
+        DatagridView $datagridView,
         array $contextVars = [],
         $availableBlocks = [],
         $cacheKey = null
