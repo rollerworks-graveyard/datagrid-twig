@@ -11,6 +11,9 @@
 
 namespace Rollerworks\Component\Datagrid\Tests\Twig\Extension;
 
+use Rollerworks\Component\Datagrid\Extension\Core\Type\ActionType;
+use Rollerworks\Component\Datagrid\Extension\Core\Type\CompoundColumnType;
+use Rollerworks\Component\Datagrid\Extension\Core\Type\TextType;
 use Rollerworks\Component\Datagrid\Test\DatagridIntegrationTestCase;
 use Rollerworks\Component\Datagrid\Twig\Extension\DatagridExtension;
 
@@ -40,7 +43,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         $cacheDir = sys_get_temp_dir().'/twig'.microtime(false);
 
         if (!file_exists($cacheDir)) {
-            mkdir($cacheDir);
+            @mkdir($cacheDir);
         }
 
         $twig = new \Twig_Environment($loader, ['debug' => true, 'cache' => $cacheDir]);
@@ -53,14 +56,20 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         $this->twig->initRuntime();
     }
 
+    private function createDatagrid($name)
+    {
+        $datagrid = $this->factory->createDatagridBuilder($name);
+        $datagrid->add('title', TextType::class, ['label' => 'Title']);
+
+        return $datagrid->getDatagrid();
+    }
+
     public function testRenderEmptyDatagridWidget()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['title']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([]);
 
-        $datagridWithTheme = $this->factory->createDatagrid('grid_with_theme');
-        $datagridWithTheme->addColumn($this->factory->createColumn('title', 'text', $datagridWithTheme, ['label' => 'Title', 'field_mapping' => ['title']]));
+        $datagridWithTheme = $this->createDatagrid('grid_with_theme');
         $datagridWithTheme->setData([]);
 
         $html = $this->twig->render(
@@ -76,16 +85,14 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testRenderDatagridWidgetWithData()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData(
             [
                 ['title' => 'This is value 1'],
             ]
         );
 
-        $datagridWithTheme = $this->factory->createDatagrid('grid_with_theme');
-        $datagridWithTheme->addColumn($this->factory->createColumn('title', 'text', $datagridWithTheme, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagridWithTheme = $this->createDatagrid('grid_with_theme');
         $datagridWithTheme->setData(
             [
                 ['title' => 'This is value 2'],
@@ -105,12 +112,10 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testRenderColumnHeaderWidget()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
-        $datagridWithTheme = $this->factory->createDatagrid('grid_with_header_theme');
-        $datagridWithTheme->addColumn($this->factory->createColumn('title', 'text', $datagridWithTheme, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagridWithTheme = $this->createDatagrid('grid_with_header_theme');
         $datagridWithTheme->setData([['title' => 'This is value 2']]);
 
         $datagridView = $datagrid->createView();
@@ -130,12 +135,10 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testRenderCellWidget()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
-        $datagridWithTheme = $this->factory->createDatagrid('grid_with_header_theme');
-        $datagridWithTheme->addColumn($this->factory->createColumn('title', 'text', $datagridWithTheme, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagridWithTheme = $this->createDatagrid('grid_with_header_theme');
         $datagridWithTheme->setData([['title' => 'This is value 2']]);
 
         $datagridView = $datagrid->createView();
@@ -155,24 +158,22 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testRenderCompoundCellWidget()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['title' => '[title]']]));
-        $datagrid->addColumn(
+        $datagrid = $this->factory->createDatagridBuilder('grid');
+        $datagrid->add('title', TextType::class, ['label' => 'Title']);
+        $datagrid->add(
             $this->factory->createColumn(
                 'actions',
-                'compound_column',
-                $datagrid,
+                CompoundColumnType::class,
                 [
                     'label' => 'Actions',
                     'columns' => [
                         'modify' => $this->factory->createColumn(
                             'action_modify',
-                            'action',
-                            $datagrid,
+                            ActionType::class,
                             [
                                 'label' => 'Modify',
-                                'field_mapping' => ['id' => '[id]'],
                                 'uri_scheme' => 'entity/{id}/modify',
+                                'data_provider' => function ($data) { return ['id' => $data['id']]; },
                             ]
                         )
                     ],
@@ -180,40 +181,38 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
             )
         );
 
+        $datagrid = $datagrid->getDatagrid();
         $datagrid->setData(
             [
                 ['id' => 1, 'title' => 'This is value 1'],
             ]
         );
 
-        $datagridWithTheme = $this->factory->createDatagrid('grid_with_header_theme');
-        $datagridWithTheme->addColumn($this->factory->createColumn('title', 'text', $datagridWithTheme, ['label' => 'Title', 'field_mapping' => ['[title]']]));
-        $datagridWithTheme->addColumn(
+        $datagridWithTheme = $this->factory->createDatagridBuilder('grid_with_header_theme');
+        $datagridWithTheme->add('title', TextType::class, ['label' => 'Title']);
+        $datagridWithTheme->add(
             $this->factory->createColumn(
                 'actions',
-                'compound_column',
-                $datagrid,
+                CompoundColumnType::class,
                 [
                     'label' => 'Actions',
                     'columns' => [
                         'modify' => $this->factory->createColumn(
                             'action_modify',
-                            'action',
-                            $datagridWithTheme,
+                            ActionType::class,
                             [
                                 'content' => 'Modify',
-                                'field_mapping' => ['id' => '[id]'],
                                 'uri_scheme' => 'entity/{id}/',
+                                'data_provider' => function ($data) { return ['id' => $data['id']]; },
                             ]
                         ),
                         'view' => $this->factory->createColumn(
                             'action_view',
-                            'action',
-                            $datagridWithTheme,
+                            ActionType::class,
                             [
                                 'content' => 'View',
-                                'field_mapping' => ['id' => '[id]'],
                                 'uri_scheme' => 'entity/{id}/',
+                                'data_provider' => function ($data) { return ['id' => $data['id']]; },
                             ]
                         )
                     ],
@@ -221,6 +220,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
             )
         );
 
+        $datagridWithTheme = $datagridWithTheme->getDatagrid();
         $datagridWithTheme->setData(
             [
                 ['id' => 2, 'title' => 'This is value 2'],
@@ -247,8 +247,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridRenderBlock()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -272,8 +271,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridMultipleTemplates()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -310,8 +308,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridRenderBlockFromParent()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -343,7 +340,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridHeaderRenderBlock()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
+        $datagrid = $this->factory->createDatagrid('grid', []);
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -367,8 +364,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridColumnHeaderRenderBlock()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -398,8 +394,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridRowsetRenderBlock()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -423,8 +418,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
     public function testDatagridColumnCellRenderBlock()
     {
-        $datagrid = $this->factory->createDatagrid('grid');
-        $datagrid->addColumn($this->factory->createColumn('title', 'text', $datagrid, ['label' => 'Title', 'field_mapping' => ['[title]']]));
+        $datagrid = $this->createDatagrid('grid');
         $datagrid->setData([['title' => 'This is value 1']]);
 
         $view = $datagrid->createView();
@@ -460,8 +454,17 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
 
         $this->assertFileExists($expected);
         $this->assertSame(
-            trim(str_replace(["\r\n", "\r"], "\n", file_get_contents($expected))),
-            trim(str_replace(["\r\n", "\r"], "\n", $outputHtml))
+            $this->normalizeWhitespace(file_get_contents($expected)),
+            $this->normalizeWhitespace($outputHtml)
         );
+    }
+
+    private function normalizeWhitespace($value)
+    {
+        $value = str_replace(["\r\n", "\r"], "\n", $value);
+        $value = preg_replace('/\s+/', ' ', $value);
+        $value = trim($value);
+
+        return $value;
     }
 }
