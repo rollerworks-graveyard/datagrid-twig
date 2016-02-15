@@ -47,7 +47,11 @@ class DatagridExtensionPerformanceTest extends DatagridPerformanceTestCase
             @mkdir($cacheDir);
         }
 
-        $this->twig = new \Twig_Environment($loader, ['debug' => true, 'cache' => $cacheDir]);
+        $this->twig = new \Twig_Environment(
+            $loader,
+            ['debug' => true, 'strict_variables' => true, 'cache' => $cacheDir]
+        );
+
         $this->extension = new DatagridExtension('datagrid.html.twig');
 
         $this->twig->addExtension($this->extension);
