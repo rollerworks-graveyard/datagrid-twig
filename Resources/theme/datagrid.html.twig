@@ -17,7 +17,7 @@
 
 {% block datagrid_column_header %}
 {% if label is empty %}
-    {% set label = name|humanize %}
+    {% set label = header.name|humanize %}
 {% endif %}
 {% spaceless %}
     <th><span>{{ label }}</span></th>
