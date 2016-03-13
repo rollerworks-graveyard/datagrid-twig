@@ -175,7 +175,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
                                 'uri_scheme' => 'entity/{id}/modify',
                                 'data_provider' => function ($data) { return ['id' => $data['id']]; },
                             ]
-                        )
+                        ),
                     ],
                 ]
             )
@@ -214,7 +214,7 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
                                 'uri_scheme' => 'entity/{id}/',
                                 'data_provider' => function ($data) { return ['id' => $data['id']]; },
                             ]
-                        )
+                        ),
                     ],
                 ]
             )
