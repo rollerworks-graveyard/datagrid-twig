@@ -20,7 +20,7 @@ use Rollerworks\Component\Datagrid\Twig\TokenParser\DatagridThemeTokenParser;
  * @author Sebastiaan Stok <s.stok@rollerscapes.net>
  * @author Norbert Orzechowicz <norbert@fsi.pl>
  */
-class DatagridExtension extends \Twig_Extension
+class DatagridExtension extends \Twig_Extension implements \Twig_Extension_InitRuntimeInterface
 {
     /**
      * @var array
@@ -32,6 +32,9 @@ class DatagridExtension extends \Twig_Extension
      */
     private $themesVars = [];
 
+    /**
+     * @var array
+     */
     private $blocksCache = [];
 
     /**
