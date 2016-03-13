@@ -74,6 +74,7 @@ class DatagridExtension extends \Twig_Extension implements \Twig_Extension_InitR
             $this->baseThemes[$i] = $theme;
         }
     }
+
     /**
      * Set base theme or themes.
      *
@@ -108,7 +109,6 @@ class DatagridExtension extends \Twig_Extension implements \Twig_Extension_InitR
             new \Twig_SimpleFunction('rollerworks_datagrid_attributes_widget', [$this, 'datagridAttributes'], ['is_safe' => ['html']]),
         ];
     }
-
 
     /**
      * {@inheritdoc}
@@ -159,8 +159,8 @@ class DatagridExtension extends \Twig_Extension implements \Twig_Extension_InitR
      * @internal
      *
      * @param DatagridView $datagrid
-     * @param                       $theme
-     * @param array                 $vars
+     * @param              $theme
+     * @param array        $vars
      */
     public function setTheme(DatagridView $datagrid, $theme, array $vars = [])
     {
