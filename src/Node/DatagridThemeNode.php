@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the RollerworksDatagrid package.
  *
@@ -11,20 +13,20 @@
 
 namespace Rollerworks\Component\Datagrid\Twig\Node;
 
+use Rollerworks\Component\Datagrid\Twig\Renderer\TwigRenderer;
+
 /**
  * @author Sebastiaan Stok <s.stok@rollerscapes.net>
- * @author Norbert Orzechowicz <norbert@fsi.pl>
  */
 class DatagridThemeNode extends \Twig_Node
 {
     public function __construct(
-        \Twig_NodeInterface $datagrid,
-        \Twig_NodeInterface $theme,
-        \Twig_Node_Expression_Array $vars,
+        \Twig_Node $view,
+        \Twig_Node $theme,
         $lineno,
         $tag = null
     ) {
-        parent::__construct(['datagrid' => $datagrid, 'theme' => $theme, 'vars' => $vars], [], $lineno, $tag);
+        parent::__construct(['view' => $view, 'resources' => $theme], [], $lineno, $tag);
     }
 
     /**
@@ -36,12 +38,10 @@ class DatagridThemeNode extends \Twig_Node
     {
         $compiler
             ->addDebugInfo($this)
-            ->write('$this->env->getExtension(\'rollerworks_datagrid\')->setTheme(')
-            ->subcompile($this->getNode('datagrid'))
+            ->write('$this->env->getRuntime(\''.TwigRenderer::class.'\')->setTheme(')
+            ->subcompile($this->getNode('view'))
             ->raw(', ')
-            ->subcompile($this->getNode('theme'))
-            ->raw(', ')
-            ->subcompile($this->getNode('vars'))
+            ->subcompile($this->getNode('resources'))
             ->raw(");\n")
         ;
     }
