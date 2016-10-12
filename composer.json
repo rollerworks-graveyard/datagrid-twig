@@ -17,7 +17,7 @@
     "require": {
         "php": "^7.0",
         "rollerworks/datagrid": "^0.11",
-        "twig/twig": "^1.26.2",
+        "twig/twig": "^1.26.1",
         "symfony/twig-bridge": "^3.0"
     },
     "require-dev": {
@@ -39,7 +39,5 @@
         "branch-alias": {
             "dev-master": "0.6-dev"
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }
