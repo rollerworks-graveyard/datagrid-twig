@@ -1,5 +1,5 @@
-RollerworksDatagrid Twig engine
-===============================
+RollerworksDatagrid Twig RenderEngine
+=====================================
 
 Twig render engine for [RollerworksDatagrid][1].
 
@@ -28,7 +28,7 @@ file in this package:
 Credits
 -------
 
-This package contains code originally provided by FSi sp. z o.o.
+This package contains code of the [Symfony](http://symfony.com/) project.
 
 License
 -------
