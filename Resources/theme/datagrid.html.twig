@@ -2,67 +2,64 @@
     Base blocks
 #}
 
-{% block datagrid %}
+{% block datagrid_container %}
 {% spaceless %}
     <table>
         <thead>
-            {{ rollerworks_datagrid_header_widget(datagrid) }}
+        <tr>
+            {% for header in columns %}
+                {{ rollerworks_datagrid_column_header(header) }}
+            {% endfor %}
+        </tr>
         </thead>
         <tbody>
-            {{ rollerworks_datagrid_rowset_widget(datagrid) }}
+        {% for index, row in rows %}
+            <tr>
+                {% for cell in row %}
+                    {{ rollerworks_datagrid_column_cell(cell) }}
+                {% endfor %}
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_column_header %}
+{% block column_header %}
 {% if label is empty %}
-    {% set label = header.name|humanize %}
+    {% set label = name|humanize %}
 {% endif %}
 {% spaceless %}
     <th><span>{{ label }}</span></th>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_header %}
+{% block compound_column_header %}
+{% if label is empty %}
+    {% set label = name|humanize %}
+{% endif %}
 {% spaceless %}
-<tr>
-    {% for header in headers %}
-        {{ rollerworks_datagrid_column_header_widget(header) }}
-    {% endfor %}
-</tr>
+    <th><span>{{ label }}</span></th>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_column_cell %}
+{% block column_cell %}
 {% spaceless %}
 <td>
     <div>
-        {% endspaceless %}{% if cell.useRaw %}{{ cell.value|raw }}{% else %}{{ cell.value }}{% endif %}{% spaceless %}
+        {% endspaceless %}{% if use_raw %}{{ value|raw }}{% else %}{{ value }}{% endif %}{% spaceless %}
     </div>
 </td>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_column_type_compound_column_cell %}
+{% block compound_column_cell %}
 {% spaceless %}
 <td>
-    {% for subCell in cell.value %}
-        {{ rollerworks_datagrid_column_cell_widget(subCell, subCell.attributes) }}
+    {% for subCell in value %}
+        {{ rollerworks_datagrid_column_cell(subCell) }}
     {% endfor %}
 </td>
-{% endspaceless %}
-{% endblock %}
-
-{% block datagrid_rowset %}
-{% spaceless %}
-    {% for index, row in datagrid %}
-        <tr>
-            {% for cell in row %}
-                {{ rollerworks_datagrid_column_cell_widget(cell) }}
-            {% endfor %}
-        </tr>
-    {% endfor %}
 {% endspaceless %}
 {% endblock %}
 
@@ -70,11 +67,11 @@
     Core extension blocks
 #}
 
-{% block datagrid_column_type_action_cell %}
+{% block action_cell %}
 {% set content = vars.content %}
 {% if content is empty %}
-    {% set content = cell.name|humanize %}
+    {% set content = name|humanize %}
 {% endif %}
 
-<a{{ rollerworks_datagrid_attributes_widget(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
+<a{{ rollerworks_datagrid_attributes(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
 {% endblock %}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the RollerworksDatagrid package.
  *
@@ -12,53 +14,46 @@
 namespace Rollerworks\Component\Datagrid\Tests\Twig\Extension;
 
 use Rollerworks\Component\Datagrid\Extension\Core\Type\ActionType;
-use Rollerworks\Component\Datagrid\Extension\Core\Type\CompoundColumnType;
 use Rollerworks\Component\Datagrid\Extension\Core\Type\DateTimeType;
 use Rollerworks\Component\Datagrid\Extension\Core\Type\NumberType;
 use Rollerworks\Component\Datagrid\Extension\Core\Type\TextType;
 use Rollerworks\Component\Datagrid\Test\DatagridPerformanceTestCase;
 use Rollerworks\Component\Datagrid\Twig\Extension\DatagridExtension;
+use Rollerworks\Component\Datagrid\Twig\Renderer\TwigRenderer;
+use Rollerworks\Component\Datagrid\Twig\Renderer\TwigRendererEngine;
 
 class DatagridExtensionPerformanceTest extends DatagridPerformanceTestCase
 {
-    /**
-     * @var \Twig_Environment
-     */
-    private $twig;
-
-    /**
-     * @var DatagridExtension
-     */
-    private $extension;
+    /** @var TwigRenderer */
+    private $renderer;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $loader = new \Twig_Loader_Filesystem(
-            [
+        $loader = new \Twig_Loader_Filesystem([
                 __DIR__.'/../../Resources/theme', // datagrid base theme
-            ]
-        );
+        ]);
 
-        $cacheDir = sys_get_temp_dir().'/twig-perf';
+        $cacheDir = __DIR__.'/twig-perf';
 
         if (!file_exists($cacheDir)) {
             @mkdir($cacheDir);
         }
 
-        $this->twig = new \Twig_Environment(
-            $loader,
-            ['debug' => true, 'strict_variables' => true, 'cache' => $cacheDir]
-        );
+        $environment = new \Twig_Environment($loader, ['debug' => true, 'strict_variables' => true, 'cache' => $cacheDir]);
+        $environment->addExtension(new DatagridExtension());
 
-        $this->extension = new DatagridExtension('datagrid.html.twig');
+        $rendererEngine = new TwigRendererEngine($environment, ['datagrid.html.twig']);
+        $this->renderer = new TwigRenderer($rendererEngine);
 
-        $this->twig->addExtension($this->extension);
-        $this->twig->initRuntime();
+        $loader = $this->prophesize(\Twig_RuntimeLoaderInterface::class);
+        $loader->load(TwigRenderer::class)->willReturn($this->renderer);
 
-        // load template to ensure a compile, we are only interested in the rendering speed
-        $this->twig->loadTemplate('datagrid.html.twig');
+        $environment->addRuntimeLoader($loader->reveal());
+
+        // load the theme template to ensure a compile, we are only interested in the rendering speed
+        $environment->loadTemplate('datagrid.html.twig');
     }
 
     /**
@@ -75,13 +70,23 @@ class DatagridExtensionPerformanceTest extends DatagridPerformanceTestCase
     {
         $this->setMaxRunningTime(1);
 
-        $datagrid = $this->factory->createDatagridBuilder('test');
+        $datagrid = $this->factory->createDatagridBuilder();
 
-        $datagrid->add('id', NumberType::class, ['data_provider' => function ($data) { return $data['id']; }]);
-        $datagrid->add('name', TextType::class, ['data_provider' => function ($data) { return $data['name']; }]);
-        $datagrid->add('email', TextType::class, ['data_provider' => function ($data) { return $data['email']; }]);
-        $datagrid->add('regdate', DateTimeType::class, ['data_provider' => function ($data) { return $data['regdate']; }]);
-        $datagrid->add('lastModified', DateTimeType::class, ['data_provider' => function ($data) { return $data['lastModified']; }]);
+        $datagrid->add('id', NumberType::class, ['data_provider' => function ($data) {
+            return $data['id'];
+        }]);
+        $datagrid->add('name', TextType::class, ['data_provider' => function ($data) {
+            return $data['name'];
+        }]);
+        $datagrid->add('email', TextType::class, ['data_provider' => function ($data) {
+            return $data['email'];
+        }]);
+        $datagrid->add('regdate', DateTimeType::class, ['data_provider' => function ($data) {
+            return $data['regdate'];
+        }]);
+        $datagrid->add('lastModified', DateTimeType::class, ['data_provider' => function ($data) {
+            return $data['lastModified'];
+        }]);
         $datagrid->add(
             'status',
             TextType::class,
@@ -97,33 +102,37 @@ class DatagridExtensionPerformanceTest extends DatagridPerformanceTestCase
         );
         $datagrid->add('group', TextType::class);
 
-        $datagrid->add(
-            'actions',
-            CompoundColumnType::class,
-            [
-                'label' => 'Actions',
-                'columns' => [
-                    'modify' => $this->factory->createColumn(
-                        'modify',
-                        ActionType::class,
-                        [
-                            'label' => 'Modify',
-                            'data_provider' => function ($data) { return ['id' => $data['id']]; },
-                            'uri_scheme' => 'entity/{id}/modify',
-                        ]
-                    ),
-                    'delete' => $this->factory->createColumn(
-                        'delete',
-                        ActionType::class,
-                        [
-                            'label' => 'Delete',
-                            'data_provider' => function ($data) { return ['id' => $data['id']]; },
-                            'uri_scheme' => 'entity/{id}/delete',
-                        ]
-                    ),
-                ],
-            ]
-        );
+        $datagrid
+            ->createCompound(
+                    'actions',
+                    [
+                        'label' => 'Actions',
+                        'data_provider' => function ($data) {
+                            return ['id' => $data['id']];
+                        },
+                    ]
+                )
+                ->add(
+                    'modify',
+                    ActionType::class,
+                    [
+                        'label' => 'Modify',
+                        'uri_scheme' => 'entity/{id}/modify',
+                    ]
+                )
+                ->add(
+                    'delete',
+                    ActionType::class,
+                    [
+                        'label' => 'Delete',
+                        'data_provider' => function ($data) {
+                            return ['id' => $data['id']];
+                        },
+                        'uri_scheme' => 'entity/{id}/delete',
+                    ]
+                )
+            ->end()
+        ;
 
         $data = [];
 
@@ -139,10 +148,13 @@ class DatagridExtensionPerformanceTest extends DatagridPerformanceTestCase
             ];
         }
 
-        $datagrid = $datagrid->getDatagrid();
+        $datagrid = $datagrid->getDatagrid('tests');
         $datagrid->setData($data);
 
-        $this->extension->datagrid($datagrid->createView());
-        $this->assertTrue(true);
+        $view = $datagrid->createView();
+
+        $this->renderer->searchAndRenderBlock($view, 'container');
+
+        self::assertTrue(true);
     }
 }

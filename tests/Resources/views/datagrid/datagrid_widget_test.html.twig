@@ -1,19 +1,21 @@
 {% rollerworks_datagrid_theme datagrid_with_theme 'datagrid/themes.html.twig' %}
 
---rollerworks_datagrid_widget datagrid--
-{{ rollerworks_datagrid_widget(datagrid) }}
+--datagrid--
+{{ rollerworks_datagrid(datagrid) }}
 
---rollerworks_datagrid_widget datagrid_with_theme--
-{{ rollerworks_datagrid_widget(datagrid_with_theme) }}
+--datagrid_with_theme--
+{{ rollerworks_datagrid(datagrid_with_theme) }}
 
---rollerworks_datagrid_header_widget datagrid--
-{{ rollerworks_datagrid_header_widget(datagrid) }}
+--datagrid: title-header--
+{{ rollerworks_datagrid_column_header(datagrid.columns.title) }}
 
---rollerworks_datagrid_header_widget datagrid_with_theme--
-{{ rollerworks_datagrid_header_widget(datagrid_with_theme) }}
+--datagrid: actions-header--
+{{ rollerworks_datagrid_column_header(datagrid.columns.actions) }}
 
---rollerworks_datagrid_rowset_widget datagrid--
-{{ rollerworks_datagrid_rowset_widget(datagrid) }}
+==----------==
 
---rollerworks_datagrid_rowset_widget datagrid_with_theme--
-{{ rollerworks_datagrid_rowset_widget(datagrid_with_theme) }}
+--datagrid_with_theme: title-header--
+{{ rollerworks_datagrid_column_header(datagrid_with_theme.columns.title) }}
+
+--datagrid_with_theme: actions-header--
+{{ rollerworks_datagrid_column_header(datagrid_with_theme.columns.actions) }}

@@ -1,19 +1,21 @@
 preset: symfony
 
+risky: true
+
 enabled:
-    - strict_param
-    - ordered_use
-    - short_array_syntax
+    #- ordered_class_elements
+    - ordered_imports
     - phpdoc_order
-    
+    - short_array_syntax
+    - strict_param
+    - declare_strict_types
+
 disabled:
-    - psr0
-    - strict
-    
+    - simplified_null_return # PHP 7.1 compatiblity (void !== null)
+
 finder:
-    in:
+    path:
         - 'src/'
         - 'tests/'
-    exclude:
-        - 'bin'
-        - 'doc'
+    not-path:
+        - 'Fixtures'

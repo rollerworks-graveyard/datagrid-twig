@@ -1,35 +1,41 @@
-{% block datagrid_grid_with_theme %}
+{% block _grid_with_theme_container %}
 {% spaceless %}
     <h1>This is datagrid theme</h1>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_grid_with_theme_header %}
-{% spaceless %}
-    <h1>This is datagrid header theme</h1>
-{% endspaceless %}
-{% endblock %}
-
-{% block datagrid_grid_with_theme_rowset %}
-{% spaceless %}
-    <h1>This is datagrid rowset theme</h1>
-{% endspaceless %}
-{% endblock %}
-
-{% block datagrid_column_header %}
+{% block column_header %}
 {% spaceless %}
     <h1>This is column header theme</h1>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_column_cell %}
+{% block _grid_with_theme_column_cell %}
 {% spaceless %}
-    <h1>This is column cell theme</h1>
+    <h1>This is column cell theme for datagrid-with-theme</h1>
 {% endspaceless %}
 {% endblock %}
 
-{% block datagrid_column_type_action_cell_action %}
+{% block compound_cell %}
 {% spaceless %}
-    <h1>This is column cell with type action theme for custom action</h1>
+    <h1>This is compound cell theme</h1>
+{% endspaceless %}
+{% endblock %}
+
+{% block compound_header %}
+{% spaceless %}
+    <h1>This is compound header theme</h1>
+{% endspaceless %}
+{% endblock %}
+
+{% block _grid_with_header_theme_title_cell %}
+{% spaceless %}
+    <h1>This is column header for datagrid-with-theme named title</h1>
+{% endspaceless %}
+{% endblock %}
+
+{% block _grid_with_theme_actions_header %}
+{% spaceless %}
+    <h1>This is column header  for datagrid-with-theme named actions</h1>
 {% endspaceless %}
 {% endblock %}

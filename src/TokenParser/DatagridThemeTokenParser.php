@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the RollerworksDatagrid package.
  *
@@ -15,7 +17,7 @@ use Rollerworks\Component\Datagrid\Twig\Node\DatagridThemeNode;
 
 /**
  * @author Sebastiaan Stok <s.stok@rollerscapes.net>
- * @author Norbert Orzechowicz <norbert@fsi.pl>
+ * @author Fabien Potencier <fabien@symfony.com>
  */
 class DatagridThemeTokenParser extends \Twig_TokenParser
 {
@@ -24,23 +26,24 @@ class DatagridThemeTokenParser extends \Twig_TokenParser
      */
     public function parse(\Twig_Token $token)
     {
+        $lineno = $token->getLine();
         $stream = $this->parser->getStream();
-        $datagrid = $this->parser->getExpressionParser()->parseExpression();
-        $theme = $this->parser->getExpressionParser()->parseExpression();
 
-        $vars = new \Twig_Node_Expression_Array([], $stream->getCurrent()->getLine());
+        $datagrid = $this->parser->getExpressionParser()->parseExpression();
 
         if ($this->parser->getStream()->test(\Twig_Token::NAME_TYPE, 'with')) {
             $this->parser->getStream()->next();
-
-            if ($this->parser->getStream()->test(\Twig_Token::PUNCTUATION_TYPE)) {
-                $vars = $this->parser->getExpressionParser()->parseExpression();
-            }
+            $resources = $this->parser->getExpressionParser()->parseExpression();
+        } else {
+            $resources = new \Twig_Node_Expression_Array([], $stream->getCurrent()->getLine());
+            do {
+                $resources->addElement($this->parser->getExpressionParser()->parseExpression());
+            } while (!$stream->test(\Twig_Token::BLOCK_END_TYPE));
         }
 
         $stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-        return new DatagridThemeNode($datagrid, $theme, $vars, $token->getLine(), $this->getTag());
+        return new DatagridThemeNode($datagrid, $resources, $lineno, $this->getTag());
     }
 
     /**
