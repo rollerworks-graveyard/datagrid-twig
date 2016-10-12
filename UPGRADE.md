@@ -1,7 +1,7 @@
 UPGRADE
 =======
 
-## Upgrade FROM  0.5 to 0.6
+## Upgrade FROM 0.5 to 0.6
 
 This version is compatible with Rollerworks Datagrid v0.11 and Twig v1.26.
 
@@ -49,3 +49,21 @@ holder, eg. `_my_datagrid_actions_modify` for a compound column named `actions`.
 
 The "datagrid" block is suffixed with `container`, eg. `datagrid_container` 
 or `_my_datagrid_container`.
+
+
+### Runtime loader
+
+To reduce memory usage the Twig extension now uses a RuntimeLoader
+for loading the rendering engine.
+
+You need to register the `DatagridRuntimeLoader` with Twig:
+
+```php
+$twig->addRuntimeLoader(new Rollerworks\Component\Datagrid\Twig\DatagridRuntimeLoader());
+```
+
+Alternatively you can use a compatible RuntimeLoader for the Datagrid,
+like the one provided with the Framework integration libraries.
+
+In practice you need a loader that can load the 
+`Rollerworks\Component\Datagrid\Twig\Renderer\TwigRenderer` class for Twig.
