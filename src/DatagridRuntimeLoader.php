@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Rollerworks\Component\Datagrid\Twig;
 
+use Rollerworks\Component\Datagrid\Twig\Renderer\TwigRendererEngine;
+
 /**
  * Twig RuntimeLoader for the DatagridExtension.
  *
@@ -20,10 +22,20 @@ namespace Rollerworks\Component\Datagrid\Twig;
  */
 class DatagridRuntimeLoader implements \Twig_RuntimeLoaderInterface
 {
+    /**
+     * @var TwigRendererEngine
+     */
+    private $rendererEngine;
+
+    public function __construct(TwigRendererEngine $rendererEngine)
+    {
+        $this->rendererEngine = $rendererEngine;
+    }
+
     public function load($class)
     {
         if (Renderer\TwigRenderer::class === $class) {
-            return new Renderer\TwigRenderer();
+            return new Renderer\TwigRenderer($this->rendererEngine);
         }
     }
 }
