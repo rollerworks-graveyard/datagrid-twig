@@ -78,12 +78,12 @@ class DatagridExtension extends \Twig_Extension
      */
     public function datagridAttributes(array $attributes)
     {
-        $attrs = [];
+        $result = '';
 
         foreach ($attributes as $attributeName => $attributeValue) {
-            $attrs[] = $attributeName.'="'.$attributeValue.'"';
+            $result .= ' '.$attributeName.'="'.$attributeValue.'"';
         }
 
-        return ' '.implode(' ', $attrs);
+        return $result;
     }
 }
