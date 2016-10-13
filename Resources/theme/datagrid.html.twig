@@ -4,7 +4,7 @@
 
 {% block datagrid_container %}
 {% spaceless %}
-    <table>
+    <table{{ rollerworks_datagrid_attributes(vars.attr|default([])) }}>
         <thead>
         <tr>
             {% for header in columns %}
@@ -14,7 +14,7 @@
         </thead>
         <tbody>
         {% for index, row in rows %}
-            <tr>
+            <tr{{ rollerworks_datagrid_attributes(vars.attr|default([])) }}>
                 {% for cell in row %}
                     {{ rollerworks_datagrid_column_cell(cell) }}
                 {% endfor %}
@@ -73,5 +73,9 @@
     {% set content = name|humanize %}
 {% endif %}
 
-<a{{ rollerworks_datagrid_attributes(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
+    {% if vars.compound|default(false) %}
+        <a{{ rollerworks_datagrid_attributes(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a>
+    {% else %}
+        <td><a{{ rollerworks_datagrid_attributes(vars.attr|merge({'href' : vars.url})) }}>{{ content|raw }}</a></td>
+    {% endif %}
 {% endblock %}

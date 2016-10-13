@@ -66,6 +66,15 @@ class DatagridExtensionTest extends DatagridIntegrationTestCase
         return $datagrid->getDatagrid($name);
     }
 
+    public function testAttributesRendering()
+    {
+        $extension = new DatagridExtension();
+
+        self::assertEquals('', $extension->datagridAttributes([]));
+        self::assertEquals(' id="1"', $extension->datagridAttributes(['id' => 1]));
+        self::assertEquals(' id="1" foo="bar"', $extension->datagridAttributes(['id' => 1, 'foo' => 'bar']));
+    }
+
     public function testRenderEmptyDatagridWidget()
     {
         $datagrid = $this->createDatagrid('grid');

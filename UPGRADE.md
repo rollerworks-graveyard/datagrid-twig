@@ -59,11 +59,13 @@ for loading the rendering engine.
 You need to register the `DatagridRuntimeLoader` with Twig:
 
 ```php
-$twig->addRuntimeLoader(new Rollerworks\Component\Datagrid\Twig\DatagridRuntimeLoader());
+$renderEngine = new \Rollerworks\Component\Datagrid\Twig\Renderer\TwigRendererEngine($twig, $themes);
+
+$twig->addRuntimeLoader(new Rollerworks\Component\Datagrid\Twig\DatagridRuntimeLoader($renderEngine));
 ```
 
 Alternatively you can use a compatible RuntimeLoader for the Datagrid,
 like the one provided with the Framework integration libraries.
 
-In practice you need a loader that can load the 
-`Rollerworks\Component\Datagrid\Twig\Renderer\TwigRenderer` class for Twig.
+**Note:** The performance works best when the runtime-class is loaded lazily, which
+is not the case with default provided implementation.
