@@ -5,3 +5,4 @@
 /bin/
 /doc/_build
 .php_cs.cache
+/tests/Extension/twig-perf
