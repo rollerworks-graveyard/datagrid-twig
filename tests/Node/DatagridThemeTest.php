@@ -70,6 +70,6 @@ final class DatagridThemeTest extends TestCase
 
     private function getVariableGetter($name)
     {
-        return sprintf('(isset($context["%s"]) ? $context["%s"] : null)', $name, $name);
+        return sprintf('($context["%s"] ?? null)', $name, $name);
     }
 }
