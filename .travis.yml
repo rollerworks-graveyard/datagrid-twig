@@ -9,7 +9,7 @@ branches:
 matrix:
     include:
         - php: '7.0'
-          env: coverage=1
+          #env: coverage=1 # Disabled due to segfaults
         - php: '7.1'
           env: deps='low'
         - php: '7.1'
